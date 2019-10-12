@@ -1,0 +1,54 @@
+<?php
+include ("configure.php");
+?>
+
+<html>
+<body>
+<form method = "post" action="index.php">
+<?php
+		// 建立與MySQL資料庫的連線
+		$link = mysqli_connect($hostname, $username, $password, $database) OR die("Error: Unable to connect to MySQL.");
+		mysqli_set_charset($link, "utf8");	
+			
+		if(@$_COOKIE["id"]==null){	
+		if(isset($_POST["inid"])&& isset($_POST["pwd"]))
+		{
+			$pid=$_POST["inid"];
+			$ppwd=$_POST["pwd"];
+			$query = "SELECT `id`,`pwd`,`cookie` FROM cookiesearch WHERE `id`='$pid' && `pwd`='$ppwd';";
+			$result = mysqli_query($link, $query);	
+			$row=mysqli_fetch_array($result,MYSQLI_ASSOC);
+			if(isset($row["id"]))
+			{
+				$ck=$row["cookie"];
+				//echo $ck;
+				Setcookie("id","$ck",time()+3600);
+				echo '<meta http-equiv="refresh" content=0;url="logoutpage.php">';
+								
+			}
+			else
+			{
+				echo " error id or password";
+			}
+			mysqli_FREE_RESULT($result);
+			mysqli_close($link);
+					
+}				
+			else
+			{
+				echo '請輸入ID跟密碼';
+			}
+}
+else{echo '<meta http-equiv="refresh" content=0;url="logoutpage.php">';}
+?>
+	<br/>
+	id:<input type="text" name="inid" >
+	<br/>
+	password:<input type="text" name="pwd">
+	 <br/>
+	 <br/>
+	<input type="submit" name="submit" value="login">
+	<input type="hidden" name="ck" value="$ck">
+	</form>
+	</body>
+	</html>
